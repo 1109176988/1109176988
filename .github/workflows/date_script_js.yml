@@ -1,0 +1,15 @@
+name: Run Date Script
+
+on:
+  schedule:
+    - cron: '30 0 * * *'  # Runs at 00:30 UTC every day
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run date script
+        run: bash ./date_script.sh

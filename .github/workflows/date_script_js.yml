@@ -1,15 +1,30 @@
-name: Run Date Script
+name: Update README with Date
 
 on:
   schedule:
-    - cron: '30 0 * * *'  # Runs at 00:30 UTC every day
+    - cron: '0 0 * * *'  # 每天UTC时间0点，即北京时间早上8点
 
 jobs:
-  run-script:
+  update-readme:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Run date script
-        run: bash ./date_script.js
+        run: node date.script.js > TEMP.txt
+
+      - name: Update README
+        run: |
+          DATE_TEXT=`cat TEMP.txt`
+          sed -i "s/Last updated:.*/Last updated: $DATE_TEXT/" README.md
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          git diff
+          git add README.md
+          git commit -m "Updated README with latest date" || echo "No changes to commit"
+          git push

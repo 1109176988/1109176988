@@ -22,8 +22,8 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
+          git config --global user.email "1109176988@qq.com"
+          git config --global user.name "1109176988"
           git diff
           git add README.md
           git commit -m "Updated README with latest date" || echo "No changes to commit"

@@ -1,42 +1,57 @@
-name: Update README
+name: Update README with Date
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # 每天早上8点执行
+    - cron: '0 0 * * *'  # 每天UTC时间午夜，即北京时间早上8点
+  workflow_dispatch:
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
-      - name: Setup Node.js
+
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16'
 
       - name: Run date script
-        run: node date_script.js
+        id: generate-date
+        run: |
+          node date_script.js
+          cat TEMP.txt  # 确保 TEMP.txt 被输出到日志中
 
       - name: Check if README is empty
+        id: check-readme
         run: |
           if [ ! -s README.md ]; then
+            echo "README is empty"
+            echo "is_empty=true" >> $GITHUB_ENV
+          else
             echo "README is not empty"
+            echo "is_empty=false" >> $GITHUB_ENV
           fi
 
-      - name: Read TEMP.txt
-        id: read-temp
-        run: echo "DATE_TEXT=$(cat TEMP.txt)" >> $GITHUB_ENV
-
-      - name: Configure Git user
-        run: git config --global user.email "1109176988@qq.com"
-
       - name: Update README
-        if: success()
         run: |
-          DATE_TEXT=${{ env.DATE_TEXT }}
-          echo "$DATE_TEXT" >> README.md
-          git add README.md
-          git commit -m "Update README with latest execution time"
-          git push
+          DATE_TEXT=$(cat TEMP.txt)
+          echo "DATE_TEXT: $DATE_TEXT"
+          if [ "$is_empty" = "true" ]; then
+            # 如果README为空，直接写入日期信息
+            echo "$DATE_TEXT" > README.md
+          else
+            # 如果README不为空，替换现有的日期信息
+            ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
+            sed -i "s|文件最后执行时间: .*|$ESCAPED_DATE_TEXT|" README.md
+          fi
+        env:
+          is_empty: ${{ env.is_empty }}
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.email "1109176988@qq.com"
+          git config --global user.name "1109176988"
+          git diff --quiet || (git add README.md && git commit -m "Updated README with latest date" && git push)

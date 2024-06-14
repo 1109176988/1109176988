@@ -1,25 +1,15 @@
-// date_script.js
 const fs = require('fs');
-const path = require('path');
 
 // 获取当前时间并格式化
-const getFormattedDate = () => {
-    const date = new Date();
-    return date.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
-};
+const now = new Date();
+const options = { timeZone: 'Asia/Shanghai', hour12: false };
+const dateStr = now.toLocaleString('zh-CN', options);
 
-// 主执行函数
-const main = () => {
-    const lastRunTime = getFormattedDate();
-    const message = `文件最后执行时间: ${lastRunTime}, (每天早上八点执行一次)`;
-    console.log(message);
+// 生成消息
+const message = `文件最后执行时间: ${dateStr}, (每天早上八点执行一次)`;
 
-    // 将执行时间写入到文件中保存
-    const logPath = path.join(__dirname, 'lastRunTime.log');
-    fs.writeFileSync(logPath, message);
+// 写入到日志文件
+fs.writeFileSync('lastRunTime.log', message);
 
-    // 输出最后执行时间，用于后续 GitHub Actions 步骤
-    console.log(lastRunTime);
-};
-
-main();
+// 输出最后执行时间到控制台
+console.log(dateStr);

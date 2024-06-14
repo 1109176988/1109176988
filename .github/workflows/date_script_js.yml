@@ -18,8 +18,12 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Run date script
-        run: node date_script.js > TEMP.txt
+      - name: Generate date text
+        id: generate-date
+        run: |
+          DATE_TEXT=$(node -e "console.log(new Date().toISOString())")
+          echo "$DATE_TEXT" > TEMP.txt
+          echo "::set-output name=date::$DATE_TEXT"
 
       - name: Check if README is empty
         id: check-readme
@@ -41,8 +45,10 @@ jobs:
           else
             # 如果README不为空，替换现有的日期信息
             ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
-            sed -i "s|Last updated:.*|Last updated: $ESCAPED_DATE_TEXT|" README.md
+            sed -i "s|Last updated: .*|Last updated: $ESCAPED_DATE_TEXT|" README.md
           fi
+        env:
+          is_empty: ${{ env.is_empty }}
 
       - name: Commit and push if changed
         run: |

@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run date script
-        run: node date.script.js > TEMP.txt
+        run: node date_script.js > TEMP.txt
 
       - name: Update README
         run: |

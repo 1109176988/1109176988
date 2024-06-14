@@ -9,7 +9,8 @@ const dateStr = now.toLocaleString('zh-CN', options);
 const message = `文件最后执行时间: ${dateStr}, (每天早上八点执行一次)`;
 
 // 写入到日志文件
-fs.writeFileSync('lastRunTime.log', message);
+const filePath = 'TEMP.txt';
+fs.writeFileSync(filePath, message);
 
 // 输出最后执行时间到控制台
-console.log(dateStr);
+console.log(message);

@@ -1,6 +1,6 @@
 // date_script.js
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
 // 获取当前时间并格式化
 const getFormattedDate = () => {

@@ -21,11 +21,27 @@ jobs:
       - name: Run date script
         run: node date_script.js > TEMP.txt
 
+      - name: Check if README is empty
+        id: check-readme
+        run: |
+          if [ ! -s README.md ]; then
+            echo "README is empty"
+            echo "is_empty=true" >> $GITHUB_ENV
+          else
+            echo "README is not empty"
+            echo "is_empty=false" >> $GITHUB_ENV
+          fi
+
       - name: Update README
         run: |
           DATE_TEXT=$(cat TEMP.txt)
-          # 使用竖线作为分隔符，避免与日期中的斜杠冲突
-          sed -i "s|Last updated:.*|Last updated: $DATE_TEXT|" README.md
+          if [ "$is_empty" = "true" ]; then
+            # 如果README为空，直接写入日期信息
+            echo "Last updated: $DATE_TEXT" > README.md
+          else
+            # 如果README不为空，替换现有的日期信息
+            sed -i "s|Last updated:.*|Last updated: $DATE_TEXT|" README.md
+          fi
 
       - name: Commit and push if changed
         run: |

@@ -21,8 +21,8 @@ jobs:
       - name: Run date script
         id: generate-date
         run: |
-          node date_script.js > TEMP.txt
-          cat TEMP.txt
+          node date_script.js
+          cat TEMP.txt  # 确保 TEMP.txt 被输出到日志中
 
       - name: Check if README is empty
         id: check-readme
@@ -37,7 +37,7 @@ jobs:
 
       - name: Update README
         run: |
-          DATE_TEXT=$(cat TEMP.txt | tail -n 1)
+          DATE_TEXT=$(cat TEMP.txt)
           echo "DATE_TEXT: $DATE_TEXT"
           if [ "$is_empty" = "true" ]; then
             # 如果README为空，直接写入日期信息

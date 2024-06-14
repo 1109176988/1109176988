@@ -27,7 +27,7 @@ jobs:
       - name: Update README with latest execution time
         run: |
           DATE_MESSAGE=${{ env.DATE_MESSAGE }}
-          sed -i "s/<!-- LAST_EXECUTION_TIME -->.*/<!-- LAST_EXECUTION_TIME --> $DATE_MESSAGE/" README.md
+          sed -i "s/<\!-- LAST_EXECUTION_TIME --\>/<\!-- LAST_EXECUTION_TIME --\> $DATE_MESSAGE/" README.md
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add README.md

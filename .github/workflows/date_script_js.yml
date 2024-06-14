@@ -43,9 +43,9 @@ jobs:
             # 如果README为空，直接写入日期信息
             echo "$DATE_TEXT" > README.md
           else
-            # 如果README不为空，替换现有的日期信息
+            # 替换日期信息
             ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
-            sed -i "s|文件最后执行时间: .*|$ESCAPED_DATE_TEXT|" README.md
+            sed -i "s|<!-- 文件最后执行时间: <!-- DatePlaceholder --> (每天早上八点执行一次) -->|$ESCAPED_DATE_TEXT|" README.md
           fi
         env:
           is_empty: ${{ env.is_empty }}

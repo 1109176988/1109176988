@@ -1,35 +1,42 @@
-name: Update README with Last Execution Time
+name: Update README
 
 on:
   schedule:
-    - cron: '0 0 * * *' # 每天 UTC 时间 0 点执行，即北京时间 8 点
-  workflow_dispatch: # 允许手动触发
+    - cron: '0 8 * * *'  # 每天早上8点执行
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
           node-version: '16'
 
-      - name: Run date script and get message
-        id: run-date-script
+      - name: Run date script
+        run: node date_script.js
+
+      - name: Check if README is empty
         run: |
-          message=$(node date_script.js)
-          echo "DATE_MESSAGE=$message" >> $GITHUB_ENV
+          if [ ! -s README.md ]; then
+            echo "README is not empty"
+          fi
+
+      - name: Read TEMP.txt
+        id: read-temp
+        run: echo "DATE_TEXT=$(cat TEMP.txt)" >> $GITHUB_ENV
+
+      - name: Configure Git user
+        run: git config --global user.email "1109176988@qq.com"
 
       - name: Update README
+        if: success()
         run: |
-          DATE_MESSAGE=${{ env.DATE_MESSAGE }}
-          echo "$DATE_MESSAGE" > README.md
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          DATE_TEXT=${{ env.DATE_TEXT }}
+          echo "$DATE_TEXT" >> README.md
           git add README.md
           git commit -m "Update README with latest execution time"
           git push

@@ -1,9 +1,9 @@
-name: Update README with Date
+name: Update README with Last Execution Time
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天UTC时间午夜，即北京时间早上8点
-  workflow_dispatch:
+    - cron: '0 0 * * *' # 每天 UTC 时间 0 点执行，即北京时间 8 点
+  workflow_dispatch: # 允许手动触发
 
 jobs:
   update-readme:
@@ -14,44 +14,22 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      - name: Run date script
-        id: generate-date
+      - name: Run date script and get message
+        id: run-date-script
         run: |
-          node date_script.js
-          cat TEMP.txt  # 确保 TEMP.txt 被输出到日志中
+          message=$(node date_script.js)
+          echo "DATE_MESSAGE=$message" >> $GITHUB_ENV
 
-      - name: Check if README is empty
-        id: check-readme
+      - name: Update README with latest execution time
         run: |
-          if [ ! -s README.md ]; then
-            echo "README is empty"
-            echo "is_empty=true" >> $GITHUB_ENV
-          else
-            echo "README is not empty"
-            echo "is_empty=false" >> $GITHUB_ENV
-          fi
-
-      - name: Update README
-        run: |
-          DATE_TEXT=$(cat TEMP.txt)
-          echo "DATE_TEXT: $DATE_TEXT"
-          if [ "$is_empty" = "true" ]; then
-            # 如果README为空，直接写入日期信息
-            echo "$DATE_TEXT" > README.md
-          else
-            # 如果README不为空，替换现有的日期信息
-            ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
-            sed -i "s|文件最后执行时间: .*|$ESCAPED_DATE_TEXT|" README.md
-          fi
-        env:
-          is_empty: ${{ env.is_empty }}
-
-      - name: Commit and push if changed
-        run: |
-          git config --global user.email "1109176988@qq.com"
-          git config --global user.name "1109176988"
-          git diff --quiet || (git add README.md && git commit -m "Updated README with latest date" && git push)
+          DATE_MESSAGE=${{ env.DATE_MESSAGE }}
+          sed -i "s/<!-- LAST_EXECUTION_TIME -->.*/<!-- LAST_EXECUTION_TIME --> $DATE_MESSAGE/" README.md
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          git commit -m "Update README with latest execution time"
+          git push

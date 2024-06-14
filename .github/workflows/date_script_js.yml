@@ -13,19 +13,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
       - name: Run date script
         run: node date_script.js > TEMP.txt
 
       - name: Update README
         run: |
-          DATE_TEXT=`cat TEMP.txt`
-          sed -i "s/Last updated:.*/Last updated: $DATE_TEXT/" README.md
+          DATE_TEXT=$(cat TEMP.txt)
+          # 使用竖线作为分隔符，避免与日期中的斜杠冲突
+          sed -i "s|Last updated:.*|Last updated: $DATE_TEXT|" README.md
 
       - name: Commit and push if changed
         run: |
           git config --global user.email "1109176988@qq.com"
           git config --global user.name "1109176988"
-          git diff
-          git add README.md
-          git commit -m "Updated README with latest date" || echo "No changes to commit"
-          git push
+          git diff --quiet || (git add README.md && git commit -m "Updated README with latest date" && git push)

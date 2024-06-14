@@ -22,6 +22,7 @@ jobs:
         id: generate-date
         run: |
           node date_script.js > TEMP.txt
+          cat TEMP.txt
 
       - name: Check if README is empty
         id: check-readme
@@ -37,13 +38,14 @@ jobs:
       - name: Update README
         run: |
           DATE_TEXT=$(cat TEMP.txt | tail -n 1)
+          echo "DATE_TEXT: $DATE_TEXT"
           if [ "$is_empty" = "true" ]; then
             # 如果README为空，直接写入日期信息
-            echo "文件最后执行时间: $DATE_TEXT, (每天早上八点执行一次)" > README.md
+            echo "$DATE_TEXT" > README.md
           else
             # 如果README不为空，替换现有的日期信息
             ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
-            sed -i "s|文件最后执行时间: .*|文件最后执行时间: $ESCAPED_DATE_TEXT, (每天早上八点执行一次)|" README.md
+            sed -i "s|文件最后执行时间: .*|$ESCAPED_DATE_TEXT|" README.md
           fi
         env:
           is_empty: ${{ env.is_empty }}

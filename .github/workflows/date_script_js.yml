@@ -40,7 +40,8 @@ jobs:
             echo "Last updated: $DATE_TEXT" > README.md
           else
             # 如果README不为空，替换现有的日期信息
-            sed -i "s|Last updated:.*|Last updated: $DATE_TEXT|" README.md
+            ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
+            sed -i "s|Last updated:.*|Last updated: $ESCAPED_DATE_TEXT|" README.md
           fi
 
       - name: Commit and push if changed

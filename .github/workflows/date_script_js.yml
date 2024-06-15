@@ -24,14 +24,34 @@ jobs:
           node date_script.js
           cat TEMP.txt  # 确保 TEMP.txt 被输出到日志中
 
+      - name: Check if README is empty
+        id: check-readme
+        run: |
+          if [ ! -s README.md ]; then
+            echo "README is empty"
+            echo "is_empty=true" >> $GITHUB_ENV
+          else
+            echo "README is not empty"
+            echo "is_empty=false" >> $GITHUB_ENV
+          fi
+
       - name: Update README
         run: |
           DATE_TEXT=$(cat TEMP.txt)
           echo "DATE_TEXT: $DATE_TEXT"
-          sed -i "s|文件最后执行时间: .* (每天早上八点执行一次)|文件最后执行时间: $DATE_TEXT, (每天早上八点执行一次)|" README.md
+          if [ "$is_empty" = "true" ]; then
+            # 如果README为空，直接写入日期信息
+            echo "$DATE_TEXT" > README.md
+          else
+            # 替换日期信息
+            ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
+            sed -i "s|<!-- 文件最后执行时间: <!-- DatePlaceholder --> (每天早上八点执行一次) -->|$ESCAPED_DATE_TEXT|" README.md
+          fi
+        env:
+          is_empty: ${{ env.is_empty }}
 
       - name: Commit and push if changed
         run: |
-          git config --global user.email "your-email@example.com"
-          git config --global user.name "Your Name"
+          git config --global user.email "1109176988@qq.com"
+          git config --global user.name "1109176988"
           git diff --quiet || (git add README.md && git commit -m "Updated README with latest date" && git push)

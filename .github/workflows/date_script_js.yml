@@ -31,7 +31,12 @@ jobs:
 
           # Escape slashes for sed command
           ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
-          sed -i "s|文件最后执行时间: .* (每天早上八点执行一次),|文件最后执行时间: $ESCAPED_DATE_TEXT, (每天早上八点执行一次),|" README.md
+          
+          # Delete the existing date line and insert the new date text in one sed command
+          sed -i '/文件最后执行时间: .* (每天早上八点执行一次),/d' README.md
+          
+          # Insert the new date text at the correct location
+          sed -i "/<!-- Gif -->/a 文件最后执行时间: $ESCAPED_DATE_TEXT, (每天早上八点执行一次)," README.md
 
       - name: Commit and push if changed
         run: |

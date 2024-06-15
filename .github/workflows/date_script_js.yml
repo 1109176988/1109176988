@@ -2,7 +2,7 @@ name: Update README with Date
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天UTC时间午夜，即北京时间早上8点
+    - cron: '0 0 * * *'  # 每天 UTC 时间午夜，即北京时间早上 8 点
   workflow_dispatch:
 
 jobs:
@@ -19,23 +19,22 @@ jobs:
           node-version: '16'
 
       - name: Run date script
-        id: generate-date
         run: |
           node date_script.js
-          cat TEMP.txt  # Ensure TEMP.txt is output to the log
+          cat TEMP.txt  # 确认 TEMP.txt 的内容输出到日志中
 
       - name: Update README
         run: |
           DATE_TEXT=$(cat TEMP.txt)
           echo "DATE_TEXT: $DATE_TEXT"
 
-          # Escape slashes for sed command
+          # 转义日期文本中的斜杠，以便在 sed 命令中安全使用
           ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
-          
-          # Delete the existing date line
+
+          # 删除现有的日期行
           sed -i '/文件最后执行时间: .* (每天早上八点执行一次),/d' README.md
-          
-          # Insert the new date text at the correct location
+
+          # 在 <!-- Gif --> 注释后面插入新的日期行
           sed -i "/<!-- Gif -->/a 文件最后执行时间: $ESCAPED_DATE_TEXT, (每天早上八点执行一次)," README.md
 
       - name: Commit and push if changed

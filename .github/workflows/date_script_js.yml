@@ -28,7 +28,7 @@ jobs:
         run: |
           DATE_TEXT=$(cat TEMP.txt)
           echo "DATE_TEXT: $DATE_TEXT"
-          sed -i "s|文件最后执行时间: .* (每天早上八点执行一次)|文件最后执行时间: $DATE_TEXT (每天早上八点执行一次)|" README.md
+          sed -i "s|文件最后执行时间: .* (每天早上八点执行一次)|文件最后执行时间: $DATE_TEXT, (每天早上八点执行一次)|" README.md
 
       - name: Commit and push if changed
         run: |

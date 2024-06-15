@@ -30,18 +30,11 @@ jobs:
           echo "DATE_TEXT: $DATE_TEXT"
 
           PLACEHOLDER="<!-- 文件最后执行时间: <!-- DatePlaceholder --> (每天早上八点执行一次) -->"
-          REGEX="文件最后执行时间:.* (每天早上八点执行一次)"
 
           if grep -q "$PLACEHOLDER" README.md; then
-            # 如果 README 包含占位符，则将其替换为实际的日期信息
             ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
             sed -i "s|$PLACEHOLDER|文件最后执行时间: $ESCAPED_DATE_TEXT, (每天早上八点执行一次)|" README.md
-          elif grep -q "$REGEX" README.md; then
-            # 如果 README 中已经包含日期信息，则进行替换
-            ESCAPED_DATE_TEXT=$(echo "$DATE_TEXT" | sed 's/[\/&]/\\&/g')
-            sed -i "s|$REGEX|文件最后执行时间: $ESCAPED_DATE_TEXT, (每天早上八点执行一次)|" README.md
           else
-            # 如果 README 中没有任何日期信息，则添加新的日期信息
             echo "文件最后执行时间: $DATE_TEXT, (每天早上八点执行一次)" >> README.md
           fi
 

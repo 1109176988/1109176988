@@ -3,6 +3,7 @@ name: Update README with Daily Quote
 on:
   schedule:
     - cron: '0 0 * * *'  # 每天 UTC 时间 0 点执行，即北京时间早上 8 点
+  workflow_dispatch:
   push:
     branches:
       - main

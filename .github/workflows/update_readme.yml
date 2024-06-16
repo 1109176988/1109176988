@@ -1,0 +1,29 @@
+name: Update README with Daily Quote
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 时间 0 点执行，即北京时间早上 8 点
+  push:
+    branches:
+      - main
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run update script
+        run: ./update_readme.sh
+
+      - name: Commit changes
+        run: |
+          git config --local user.name "1109176988"
+          git config --local user.email "1109176988@qq.com"
+          git add README.md
+          git commit -m "Update daily quote"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,7 +2,7 @@ name: Update README with Date
 
 on:
   schedule:
-    - cron: '0 23 * * *'  # 每天 UTC 时间午夜，即北京时间早上 8 点
+    - cron: '8 23 * * *'  # 每天 UTC 时间午夜，即北京时间早上 8 点
   workflow_dispatch:
 
 jobs:
